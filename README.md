@@ -21,7 +21,7 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 
 - [ ] teste de concorrência: demonstrando que múltiplos jogadores podem acessar o serviço ao mesmo tempo em partidas individuais ou em grupos sem comportamentos estranhos.
 - [ ] teste de recuperação de falhas: quando um componente falha e volta a executar, ele não leva o sistema a nenhum estado inesperado.
-- [ ] demonstração de funcionalidades: múltiplas partidas individuais ou em grupos
+- [ ] demonstração de funcionalidades: múltiplas partidas individuais ou em grupos.
 
 ## Capturas de tela:
 
