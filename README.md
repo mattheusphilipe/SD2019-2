@@ -15,6 +15,8 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
   
 ## Motivação e contexto
 
+  Fomentar o aprendizado de se utlizar sistemas distribuídos com abordagens práticas e teóricas lecionadas nas aulas.
+  
 ## Como deve ser testado?
 
 - [ ] teste de concorrência: demonstrando que múltiplos jogadores podem acessar o serviço ao mesmo tempo em partidas individuais ou em grupos sem comportamentos estranhos.
