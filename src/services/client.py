@@ -1,7 +1,6 @@
 # coding=utf-8
-# como tratar quando excedemos o buffer, como lidar com sockets que excedeam o buffer e continuar com a conexão aberta
+# como tratar quando excedemos o buffer, cooo lidar com sockets que excedeam o buffer e continuar com a conexão aberta
 import socket
-import select
 import errno
 import sys
 
