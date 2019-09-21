@@ -26,3 +26,15 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 ## Capturas de tela:
 
 - Ainda não se aplica.
+
+## TO DO
+
+- Definir estrutura que enviará os dados da partida ao usuário.
+- Definir estrutura que suporte multiplayer ou vincular cada partida ao _socket_.
+- Por enquanto não haverá níveis dificuldades para 1° entrega.
+- 6 Operações por partida.
+- Temporizador de cada operação se der tempo.
+- Definir se terá um temporizador por operação e por partida.
+- Mostrar no final da partida lista das operações corretas/ erradas e quantidade de acerto/erro
+- Opção de sair ou começar no partida.
+- Quando conectar perguntar se quer começar a partida.
