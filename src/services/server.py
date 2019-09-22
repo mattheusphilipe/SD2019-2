@@ -6,7 +6,7 @@ import operator
 # Nos da capacidades de operar IO no nível do SO, porque sockest nos windows e linux são diferentes e com select este codigo
 # ira rodar no mac linux e windows.
 import select
-#you can use pickle for anything whereas like JSON
+# you can use pickle for anything whereas like JSON
 import pickle
 import time
 
@@ -18,9 +18,6 @@ PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
 # retrieve local hostname
 local_hostname = socket.gethostname()
 
-# get fully qualified hostname
-local_fqdn = socket.getfqdn()
-
 # get the according IP address
 IP = socket.gethostbyname(local_hostname)
 
@@ -30,7 +27,7 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.settimeout(5)
 # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
-#irá nos permitir reconectar
+# irá nos permitir reconectar
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 # socket.gethostname() ié basicamente meu localhost
@@ -48,6 +45,7 @@ sockets_list = [server_socket]
 
 # dicionáiro de clientes, socket will be the  key e user data is the value
 clients = {}
+
 
 def receive_message(client_socket):
     try:
@@ -69,7 +67,8 @@ def receive_message(client_socket):
 
 
 while True:
-    # select dot select, takes 3 pramester, read list(sockets we gonna read, sockest we are gonnna read and wirte, sockets we might air on),
+    # select dot select, takes 3 pramester, read list(sockets we gonna read, sockest we are gonnna read and wirte,
+    # sockets we might air on),
     read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
 
     for notified_socket in read_sockets:
@@ -83,7 +82,8 @@ while True:
 
             clients[client_socket] = user
 
-            print(f"Accepted new connnection from {client_address[0]}:{client_address[1]} username:{user['data'].decode('utf-8')}")
+            print(
+                f"Accepted new connnection from {client_address[0]}:{client_address[1]} username:{user['data'].decode('utf-8')}")
             '''
             print("---------------------------------------------")
             print("|                 START GAME                |")
@@ -104,16 +104,10 @@ while True:
 
             for client_socket in clients:
                 # if client_socket != notified_socket: notificar os outros
-                if client_socket != notified_socket:
+                if client_socket == notified_socket:
                     # dizemos que o que queremos enviar pelo socket, como bytes('welcome', 'utf-8')
-                    client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
+                    client_socket.send(user['header'] + user['data'] + message['header'] + bytes("jogo", encoding="utf-8"))
 
     for notified_socket in exception_sockets:
         sockets_list.remove(notified_socket)
         del clients[notified_socket]
-
-
-
-
-
-
