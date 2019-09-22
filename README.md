@@ -54,3 +54,45 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 - [ ] a cada operação gerado, guardar na estrutura daquele cliente as operações e respostas e comparar com a estrutura das respostas do cliente
 - [ ] Serão duas estruturas perguntas x respostas, a primeira estrutura (array) irá conter a operação e a resposta, e a segunda estrutura a resposta de cada operação
 -[ ] criar uma variavel de acerto  e erro,
+
+
+
+
+-------------------------TO US---------------------
+git add . : adiciona todos os arquivos
+git add caminho/nome_arquivo: para adicionar somente um arquivo especifico (pega o caminho e o nome no git status)
+
+git commit -m "digitar mensagem aqui" (Fazer commit local)
+
+git push origin nome_branch (enviar commit para a branch remota)
+
+Abrir Pull no git (clicar em pull request, geralmente o novo commit ele pergunta se quer abrir um pull request)
+
+Colcoar os revisores e o assignee para você que criou
+
+Comando para criar nova branch:
+
+git checkout -b nome_da_branch (nao precisa ser com aspas) 
+
+Comando para mudar de branch:
+
+git checkout nome_da_branch
+
+
+Comando para saber o status dos arquivos:
+
+git status
+
+Comando saber em que branch estou
+
+git branch (a sua é a verdinha)
+
+-----------Atualizar a branch -----------
+
+Todo dia ver se tem alguma atualização 
+
+git pull origin master --rebase
+
+resolve os conflitos se tiver
+
+------- caso no Pull request indique conflito---
