@@ -1,4 +1,5 @@
 # coding=utf-8
+import logging
 import socket
 
 # manage many of connections
@@ -16,6 +17,7 @@ PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
 # AF adrees family
 # SOCK_STREAM correspond to TCP protocol
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.settimeout(5)
 # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 #irá nos permitir reconectar
@@ -27,6 +29,7 @@ server_socket.bind((IP, PORT))
 
 # posso passar um valor para criar uma fila.
 server_socket.listen()
+
 
 # start manage list of clientes... we have sockest
 
@@ -49,8 +52,10 @@ def receive_message(client_socket):
 
         return {"header": message_header, "data": client_socket.recv(message_length)}
 
-    except:
-        return False
+    except socket.timeout as err:
+        logging.error(err)
+    except socket.error as err:
+        logging.error(err)
 
 
 while True:
@@ -73,10 +78,6 @@ while True:
             print("---------------------------------------------")
             print("|                 START GAME                |")
             print("|                 EXIT GAME                 |")
-            print("|                                           |")
-            print("|                                           |")
-            print("|                                           |")
-            print("|                                           |")
             print("---------------------------------------------")
             '''
         else:
@@ -92,6 +93,7 @@ while True:
             print(f"Receive message from {user['data'].decode('utf-8')}: {message['data'].decode('utf-8')}")
 
             for client_socket in clients:
+                # if client_socket != notified_socket: notificar os outros
                 if client_socket != notified_socket:
                     # dizemos que o que queremos enviar pelo socket, como bytes('welcome', 'utf-8')
                     client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
