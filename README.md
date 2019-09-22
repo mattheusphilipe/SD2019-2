@@ -48,6 +48,7 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 - No servidor:
 - [ ] Fazer a lógica da partida
 - [ ] quando o cliente inicia uma partida, o servidor envia a equação da partida
+- [x] Função de equaçoes randomicas
 - [ ] servidor envia as operações e esperar o cliente responder
 - [ ] pegar a resposta e guardar na estrutura de resposta (array simples)
 - [ ] a cada operação gerado, guardar na estrutura daquele cliente as operações e respostas e comparar com a estrutura das respostas do cliente
