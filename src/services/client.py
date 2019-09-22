@@ -7,17 +7,14 @@ from utils import *
 
 HEADER_LENGTH = 10
 PORT = 1989
-
-
+IS_CONNECT_ERROR = False
 local_hostname = socket.gethostname()
-
-# get fully qualified hostname
-local_fqdn = socket.getfqdn()
-
 # get the according IP address
 # IP = "127.0.0.1" # Standard loopback interface address (localhost)
-IP = socket.gethostbyname(local_hostname) # para conectar no servidor que você estiver executando
-# IP = "192.168.56.1"
+IP = socket.gethostbyname(local_hostname)
+
+FIRST_MESSAGE = True
+# para conectar no servidor que você estiver executando
 
 my_username = input("Username: ")
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,25 +22,34 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
     client_socket.connect((IP, PORT))
 except Exception as e:
+    IS_CONNECT_ERROR = True
     print("Cannot connect to the server:", e)
-print("Connected")
 
+if IS_CONNECT_ERROR is False:
+    print("Connected")
 
+# False ou (1 # prevents timeout)
 client_socket.setblocking(False)
+
 
 username = encode_decode(my_username, 1)
 username_header = encode_decode(f"{len(username): < {HEADER_LENGTH}}", 1)
 client_socket.send(username_header + username)
 
-while True:
-    message = input(f"{my_username} > ")
+message = None
 
-    if message:
-        message = encode_decode(message, 1)
-        message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
-        client_socket.send(message_header + message)
+while True:
+
+    if FIRST_MESSAGE:
+        message = input(f"{my_username} > ")
+
+        if message:
+            message = encode_decode(message, 1)
+            message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
+            client_socket.send(message_header + message)
 
     try:
+        FIRST_MESSAGE = False
         while True:
             # recebendo coisas
             username_header = client_socket.recv(HEADER_LENGTH)
@@ -56,7 +62,12 @@ while True:
             message_header = client_socket.recv(HEADER_LENGTH)
             message_length = int(message_header.decode("utf-8").strip())
             message = client_socket.recv(message_length).decode("utf-8")
-            print(f"{username} > {message}")
+            print(f"{username} > {message}") # trocar username por servidor
+            message = input(f"{my_username} > ")
+            if message:
+                message = encode_decode(message, 1)
+                message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
+                client_socket.send(message_header + message)
 
     except IOError as excepting:
         if excepting.errno != errno.EAGAIN and excepting.errno != errno.EWOULDBLOCK:
