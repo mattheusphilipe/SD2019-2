@@ -38,3 +38,18 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 - [x] Mostrar no final da partida lista das operações corretas/ erradas e quantidade de acerto/erro
 - [x] Opção de sair ou começar uma partida.
 - [x] Quando conectar perguntar se quer começar a partida.
+
+## TO DO NOW
+
+- [ ] Multiplus clientes (socket) (conexão e desconexão)
+- Quando o cliente conectar:
+- [ ] Perguntar se quer iniciar uma partida ou logo após digitar o nome
+- [ ] Enviar para o cliente a partida
+- No servidor:
+- [ ] Fazer a lógica da partida
+- [ ] quando o cliente inicia uma partida, o servidor envia a equação da partida
+- [ ] servidor envia as operações e esperar o cliente responder
+- [ ] pegar a resposta e guardar na estrutura de resposta (array simples)
+- [ ] a cada operação gerado, guardar na estrutura daquele cliente as operações e respostas e comparar com a estrutura das respostas do cliente
+- [ ] Serão duas estruturas perguntas x respostas, a primeira estrutura (array) irá conter a operação e a resposta, e a segunda estrutura a resposta de cada operação
+-[ ] criar uma variavel de acerto  e erro,
