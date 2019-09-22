@@ -8,17 +8,26 @@ from utils import *
 HEADER_LENGTH = 10
 PORT = 1989
 
+
 local_hostname = socket.gethostname()
 
 # get fully qualified hostname
 local_fqdn = socket.getfqdn()
 
 # get the according IP address
-IP = socket.gethostbyname(local_hostname)
+# IP = "127.0.0.1" # Standard loopback interface address (localhost)
+IP = socket.gethostbyname(local_hostname) # para conectar no servidor que você estiver executando
+# IP = "192.168.56.1"
 
 my_username = input("Username: ")
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((IP, PORT))
+
+try:
+    client_socket.connect((IP, PORT))
+except Exception as e:
+    print("Cannot connect to the server:", e)
+print("Connected")
+
 
 client_socket.setblocking(False)
 

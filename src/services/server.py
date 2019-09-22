@@ -11,6 +11,7 @@ import pickle
 import time
 
 HEADER_LENGTH = 10
+# IP = 127.0.0.1 # Standard loopback interface address (localhost)
 # IP = "192.168.0.111"  # Standard loopback interface address (localhost)
 PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
 
@@ -26,7 +27,7 @@ IP = socket.gethostbyname(local_hostname)
 # AF adrees family
 # SOCK_STREAM correspond to TCP protocol
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.settimeout(1)
+server_socket.settimeout(5)
 # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 #irá nos permitir reconectar
@@ -37,7 +38,7 @@ server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind((IP, PORT))
 
 # posso passar um valor para criar uma fila.
-server_socket.listen()
+server_socket.listen(15)
 
 print(f"Listening on {(IP, PORT)}")
 
