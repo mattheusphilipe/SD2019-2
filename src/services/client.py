@@ -3,21 +3,18 @@
 import socket
 import errno
 import sys
+from utils import *
 
 HEADER_LENGTH = 10
-
-IP = "127.0.0.1"
 PORT = 1989
 
+local_hostname = socket.gethostname()
 
-def encode_decode(data, option):
-    if option == 1:
-        return data.encode("utf-8")
-    elif option == 2:
-        return data.decode("utf-8")
-    else:
-        return None
+# get fully qualified hostname
+local_fqdn = socket.getfqdn()
 
+# get the according IP address
+IP = socket.gethostbyname(local_hostname)
 
 my_username = input("Username: ")
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

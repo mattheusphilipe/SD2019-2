@@ -1,7 +1,7 @@
 # coding=utf-8
 import logging
 import socket
-
+import operator
 # manage many of connections
 # Nos da capacidades de operar IO no nível do SO, porque sockest nos windows e linux são diferentes e com select este codigo
 # ira rodar no mac linux e windows.
@@ -11,13 +11,22 @@ import pickle
 import time
 
 HEADER_LENGTH = 10
-IP = "127.0.0.1"  # Standard loopback interface address (localhost)
+# IP = "192.168.0.111"  # Standard loopback interface address (localhost)
 PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
+
+# retrieve local hostname
+local_hostname = socket.gethostname()
+
+# get fully qualified hostname
+local_fqdn = socket.getfqdn()
+
+# get the according IP address
+IP = socket.gethostbyname(local_hostname)
 
 # AF adrees family
 # SOCK_STREAM correspond to TCP protocol
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.settimeout(5)
+server_socket.settimeout(1)
 # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 #irá nos permitir reconectar
@@ -30,6 +39,7 @@ server_socket.bind((IP, PORT))
 # posso passar um valor para criar uma fila.
 server_socket.listen()
 
+print(f"Listening on {(IP, PORT)}")
 
 # start manage list of clientes... we have sockest
 
@@ -37,7 +47,6 @@ sockets_list = [server_socket]
 
 # dicionáiro de clientes, socket will be the  key e user data is the value
 clients = {}
-
 
 def receive_message(client_socket):
     try:
