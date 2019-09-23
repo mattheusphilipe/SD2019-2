@@ -65,6 +65,8 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 - padrão de nome branch> develop-seunome
 - se precisar de outra develop-seunome-algumacoisa
 
+Comandos para subir suas alterações:
+
 - git add . : adiciona todos os arquivos
 - git add caminho/nome_arquivo: para adicionar somente um arquivo especifico (pega o caminho e o nome no git status)
 
@@ -97,7 +99,7 @@ Comando saber em que branch estou
 
 Todo dia ver se tem alguma atualização 
 
-- git pull origin master --rebase
+- git pull origin develop --rebase
 
 resolve os conflitos se tiver
 
