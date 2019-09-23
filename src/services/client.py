@@ -5,6 +5,8 @@ import errno
 import sys
 from utils import *
 
+#colocandocomentario para o testo do matêus
+
 HEADER_LENGTH = 10
 PORT = 1989
 IS_CONNECT_ERROR = False
