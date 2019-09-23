@@ -59,12 +59,16 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 
 
 -------------------------TO US---------------------
-git add . : adiciona todos os arquivos
-git add caminho/nome_arquivo: para adicionar somente um arquivo especifico (pega o caminho e o nome no git status)
 
-git commit -m "digitar mensagem aqui" (Fazer commit local)
+- padrão de nome branch> develop-seunome
+- se precisar de outra develop-seunome-algumacoisa
 
-git push origin nome_branch (enviar commit para a branch remota)
+- git add . : adiciona todos os arquivos
+- git add caminho/nome_arquivo: para adicionar somente um arquivo especifico (pega o caminho e o nome no git status)
+
+- git commit -m "digitar mensagem aqui" (Fazer commit local)
+
+- git push origin nome_branch (enviar commit para a branch remota)
 
 Abrir Pull no git (clicar em pull request, geralmente o novo commit ele pergunta se quer abrir um pull request)
 
@@ -72,26 +76,26 @@ Colcoar os revisores e o assignee para você que criou
 
 Comando para criar nova branch:
 
-git checkout -b nome_da_branch (nao precisa ser com aspas) 
+- git checkout -b nome_da_branch (nao precisa ser com aspas) 
 
 Comando para mudar de branch:
 
-git checkout nome_da_branch
+- git checkout nome_da_branch
 
 
 Comando para saber o status dos arquivos:
 
-git status
+- git status
 
 Comando saber em que branch estou
 
-git branch (a sua é a verdinha)
+- git branch (a sua é a verdinha)
 
 -----------Atualizar a branch -----------
 
 Todo dia ver se tem alguma atualização 
 
-git pull origin master --rebase
+- git pull origin master --rebase
 
 resolve os conflitos se tiver
 
