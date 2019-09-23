@@ -80,7 +80,7 @@ Colcoar os revisores e o assignee para você que criou
 
 Comando para criar nova branch:
 
-- git checkout -b nome_da_branch (nao precisa ser com aspas) 
+- git checkout -b nome_da_sua_branch (nao precisa ser com aspas) 
 
 Comando para mudar de branch:
 
