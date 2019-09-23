@@ -60,6 +60,8 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 
 -------------------------TO US---------------------
 
+*Por enquanto fazer PR para develop-seunome => develop
+
 - padrão de nome branch> develop-seunome
 - se precisar de outra develop-seunome-algumacoisa
 
