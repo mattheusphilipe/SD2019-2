@@ -1,4 +1,4 @@
-import operador
+import operator
 import random
 
 def encode_decode(data, option):
