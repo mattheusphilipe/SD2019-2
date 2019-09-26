@@ -1,7 +1,7 @@
 # coding=utf-8
 import logging
 import socket
-import operator
+from utils import *
 # manage many of connections
 # Nos da capacidades de operar IO no nível do SO, porque sockest nos windows e linux são diferentes e com select este codigo
 # ira rodar no mac linux e windows.
@@ -45,7 +45,11 @@ sockets_list = [server_socket]
 
 # dicionáiro de clientes, socket will be the  key e user data is the value
 clients = {}
-
+client_response = []
+START_GAME = False
+LAST_RESULT_EQUATION = None
+RIGHT_ANSWER_QTD = 0
+WRONG_ANSWER_QTD = 0
 
 def receive_message(client_socket):
     try:
@@ -101,15 +105,46 @@ while True:
 
             user = clients[notified_socket]
             print(f"Receive message from {user['data'].decode('utf-8')}: {message['data'].decode('utf-8')}")
+            print(START_GAME)
+            if not START_GAME:
+                if notified_socket not in client_response:
+                    client_response.append(
+                        {
+                            notified_socket:
+                                {
+                                    'operations': [],
+                                    'answers': [],
+                                    'wrongAnswers': 0,
+                                    'rightAnswers': 0
+                                }
+                        }
+                    )
+            else:
+                answer = int(message['data'].decode('utf-8'))
+                client_response[0][notified_socket]['answers'].append(answer)
+                if answer == LAST_RESULT_EQUATION:
+                    client_response[0][notified_socket]['rightAnswers'] = RIGHT_ANSWER_QTD = RIGHT_ANSWER_QTD + 1
+                else:
+                    client_response[0][notified_socket]['wrongAnswers'] = WRONG_ANSWER_QTD = WRONG_ANSWER_QTD + 1
+                print(client_response[0][notified_socket])
 
             for client_socket in clients:
                 # if client_socket != notified_socket: notificar os outros
-                if client_socket == notified_socket:
+                if client_socket == notified_socket and len(client_response[0][notified_socket]['operations']) < 6:
+                    equation = fun_equacao()
+                    LAST_RESULT_EQUATION = int(equation[1])
+                    client_response[0][notified_socket]['operations'].append(f"{equation[0]}: {equation[1]}")
                     # dizemos que o que queremos enviar pelo socket, como bytes('welcome', 'utf-8')
-                    client_socket.send(user['header'] + user['data'] + message['header'] + bytes("jogo", encoding="utf-8"))
+                    client_socket.send(user['header'] + user['data'] + message['header'] + bytes(f"{equation[0]} = ?",
+                                                                                                 encoding="utf-8"))
+                    START_GAME = True
+                else:
+                    client_socket.send(user['header'] + user['data'] + message['header'] + bytes(
+                        f"{client_response[0][notified_socket]} \n END GAME BITCH \n ",
+                        encoding="utf-8"))
 
     for notified_socket in exception_sockets:
         sockets_list.remove(notified_socket)
         del clients[notified_socket]
 
-#ivana comentario branch
+# ivana comentario branch

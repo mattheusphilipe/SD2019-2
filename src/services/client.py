@@ -14,11 +14,11 @@ local_hostname = socket.gethostname()
 # get the according IP address
 # IP = "127.0.0.1" # Standard loopback interface address (localhost)
 IP = socket.gethostbyname(local_hostname)
-
+MAX_BYTES_TO_RECEIVE = 2048
 FIRST_MESSAGE = True
 # para conectar no servidor que você estiver executando
 
-my_username = input("Username: ")
+MY_USERNAME = input("Username: ")
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
@@ -34,7 +34,7 @@ if IS_CONNECT_ERROR is False:
 client_socket.setblocking(False)
 
 
-username = encode_decode(my_username, 1)
+username = encode_decode(MY_USERNAME, 1)
 username_header = encode_decode(f"{len(username): < {HEADER_LENGTH}}", 1)
 client_socket.send(username_header + username)
 
@@ -43,7 +43,7 @@ message = None
 while True:
 
     if FIRST_MESSAGE:
-        message = input(f"{my_username} > ")
+        message = input(f"{MY_USERNAME} > ")
 
         if message:
             message = encode_decode(message, 1)
@@ -62,10 +62,9 @@ while True:
             username = client_socket.recv(username_length).decode("utf-8")
 
             message_header = client_socket.recv(HEADER_LENGTH)
-            message_length = int(message_header.decode("utf-8").strip())
-            message = client_socket.recv(message_length).decode("utf-8")
+            message = client_socket.recv(MAX_BYTES_TO_RECEIVE).decode("utf-8")
             print(f"{username} > {message}") # trocar username por servidor
-            message = input(f"{my_username} > ")
+            message = input(f"{MY_USERNAME} > ")
             if message:
                 message = encode_decode(message, 1)
                 message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
