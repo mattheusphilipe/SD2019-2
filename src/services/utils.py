@@ -1,5 +1,19 @@
+# coding=utf-8
 import operator
 import random
+
+
+# funcão para tentar conversão de um número par inteiro ou real
+
+def int_float(number, option):
+    try:
+        if option == 1:
+            c = int(number)
+        elif option == 2:
+            c = float(number)
+        return True
+    except:
+        return False
 
 
 def encode_decode(data, option):
@@ -36,4 +50,4 @@ def fun_equacao():
 
     resultado = random_hardOperator(l, l1)
 
-    return [equacao, resultado];
+    return [equacao, resultado]
