@@ -45,7 +45,7 @@ sockets_list = [server_socket]
 
 # dicionáiro de clientes, socket will be the  key e user data is the value
 clients = {}
-client_response = []
+client_response = {}
 START_GAME = False
 LAST_RESULT_EQUATION = None
 RIGHT_ANSWER_QTD = 0
@@ -62,7 +62,14 @@ def receive_message(client_socket):
 
         message_length = int(message_header.decode("utf-8").strip())
 
-        return {"header": message_header, "data": client_socket.recv(message_length)}
+        return {
+            "header": message_header, 
+            "data": client_socket.recv(message_length),
+            'operations': [],
+            'answers': [],
+            'wrongAnswers': 0,
+            'rightAnswers': 0
+            }
 
     except socket.timeout as err:
         logging.error(err)
@@ -76,6 +83,8 @@ while True:
     read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
 
     for notified_socket in read_sockets:
+        print(notified_socket)
+        print('')
         if notified_socket == server_socket:
             client_socket, client_address = server_socket.accept()
 
@@ -85,6 +94,10 @@ while True:
             sockets_list.append(client_socket)
 
             clients[client_socket] = user
+            
+            print('')
+            print(clients)
+            print('')
 
             print(
                 f"Accepted new connnection from {client_address[0]}:{client_address[1]} username:{user['data'].decode('utf-8')}")
@@ -94,6 +107,7 @@ while True:
             print("|                 EXIT GAME                 |")
             print("---------------------------------------------")
             '''
+            print(clients[client_socket])
         else:
             message = receive_message(notified_socket)
 
@@ -105,43 +119,46 @@ while True:
 
             user = clients[notified_socket]
             print(f"Receive message from {user['data'].decode('utf-8')}: {message['data'].decode('utf-8')}")
-            print(START_GAME)
-            if not START_GAME:
-                if notified_socket not in client_response:
-                    client_response.append(
-                        {
-                            notified_socket:
-                                {
-                                    'operations': [],
-                                    'answers': [],
-                                    'wrongAnswers': 0,
-                                    'rightAnswers': 0
-                                }
-                        }
-                    )
+            print(user)
+            print(clients)
+            
+            if notified_socket not in clients:
+                print('\n new \n')
+        
+               
             else:
-                answer = int(message['data'].decode('utf-8'))
-                client_response[0][notified_socket]['answers'].append(answer)
+                print('')
+                print(clients)
+                print('')
+
+                answer = encode_decode(message['data'], 2)
+
+                clients[notified_socket]['answers'].append(answer)
+
                 if answer == LAST_RESULT_EQUATION:
-                    client_response[0][notified_socket]['rightAnswers'] = RIGHT_ANSWER_QTD = RIGHT_ANSWER_QTD + 1
+                    clients[notified_socket]['rightAnswers'] = RIGHT_ANSWER_QTD = RIGHT_ANSWER_QTD + 1
                 else:
-                    client_response[0][notified_socket]['wrongAnswers'] = WRONG_ANSWER_QTD = WRONG_ANSWER_QTD + 1
-                print(client_response[0][notified_socket])
+                    clients[notified_socket]['wrongAnswers'] = WRONG_ANSWER_QTD = WRONG_ANSWER_QTD + 1
 
             for client_socket in clients:
+                print('\n aqui 2 \n')
+                print(clients.get(notified_socket))
+               # clientSize = len(client_response[notified_socket]['operations'])
+                
+            
                 # if client_socket != notified_socket: notificar os outros
-                if client_socket == notified_socket and len(client_response[0][notified_socket]['operations']) < 6:
+                if client_socket == notified_socket:
                     equation = fun_equacao()
-                    LAST_RESULT_EQUATION = int(equation[1])
-                    client_response[0][notified_socket]['operations'].append(f"{equation[0]}: {equation[1]}")
+                    LAST_RESULT_EQUATION = equation[1]
+                    clients[notified_socket]['operations'].append(f"{equation[0]}: {equation[1]}")
                     # dizemos que o que queremos enviar pelo socket, como bytes('welcome', 'utf-8')
                     client_socket.send(user['header'] + user['data'] + message['header'] + bytes(f"{equation[0]} = ?",
                                                                                                  encoding="utf-8"))
-                    START_GAME = True
                 else:
                     client_socket.send(user['header'] + user['data'] + message['header'] + bytes(
-                        f"{client_response[0][notified_socket]} \n END GAME BITCH \n ",
+                        f"{clients[notified_socket]} \n END GAME BITCH \n ",
                         encoding="utf-8"))
+                    del clients[notified_socket]
 
     for notified_socket in exception_sockets:
         sockets_list.remove(notified_socket)
