@@ -1,6 +1,19 @@
-import operador
 import random
 
+
+# funcao para testar inteiros
+def try_int(param):
+    try:
+        c = int(param)
+        return True
+    except:
+        return False
+
+
+        import operator
+
+
+# funcao para encode e decode
 def encode_decode(data, option):
     if option == 1:
         return data.encode("utf-8")
@@ -9,9 +22,10 @@ def encode_decode(data, option):
     else:
         return None
 
-#funcao para formar a equação e o seu resultado
+
+# funcao para formar a equação e o seu resultado
 def fun_equacao():
-    ops = {"+": operator.add, "-": operator.sub, "*":operator.mul, "/": operator.floordiv}
+    ops = {"+": operator.add, "-": operator.sub, "*": operator.mul, "/": operator.floordiv}
 
     hardOperators = [ops["+"], ops["-"], ops["*"], ops["/"]]
     random_hardOperator = random.choice(hardOperators)
@@ -25,15 +39,13 @@ def fun_equacao():
     elif random_hardOperator == ops["/"]:
         operador = "/"
     for x in range(1):
-        l = random.randint(1,20)
+        l = random.randint(1, 20)
 
     for x in range(1):
-        l1 = random.randint(1,20)
+        l1 = random.randint(1, 20)
 
-    equacao = ' '.join([str(l),operador,str(l1)])
+    equacao = ' '.join([str(l), operador, str(l1)])
 
-    resultado = random_hardOperator(l,l1)
+    resultado = random_hardOperator(l, l1)
 
     return [equacao, resultado];
-
-

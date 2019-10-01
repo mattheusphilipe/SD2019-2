@@ -1,68 +1,67 @@
-# coding=utf-8
-# como tratar quando excedemos o buffer, cooo lidar com sockets que excedeam o buffer e continuar com a conexão aberta
-import socket
-import errno
-import sys
+#client.py
 from utils import *
 
-HEADER_LENGTH = 10
-PORT = 1989
+#!/usr/bin/python                               # This is client.py file
 
+import socket                                   # Import socket module
 
-local_hostname = socket.gethostname()
+s = socket.socket()                             # Create a socket object
+host = socket.gethostname()                # Get local machine name
+port = 1989                                    # Reserve a port for your service.
 
-# get fully qualified hostname
-local_fqdn = socket.getfqdn()
+s.connect((host, port))
 
-# get the according IP address
-# IP = "127.0.0.1" # Standard loopback interface address (localhost)
-IP = socket.gethostbyname(local_hostname) # para conectar no servidor que você estiver executando
-# IP = "192.168.56.1"
+# print("Conexão feita com sucesso")
+data = s.recv(1024) # Recebe a primeira mensagem do servidor
+s.send(input(data.decode()).encode()) # Mostra a mensagem recebida, e já envia a resposta, no caso o username
 
-my_username = input("Username: ")
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print('''
+                {}
+        '''.format((s.recv(1024)).decode())) # Boas vindas
+    
+while(True):
+    game_control = input('''
+         ---------------------------------------------
+        |            1 - TO START GAME                |
+        |            2 - TO EXIT GAME                 |
+         ---------------------------------------------
+        
+        |>> Your option:  ''')
 
-try:
-    client_socket.connect((IP, PORT))
-except Exception as e:
-    print("Cannot connect to the server:", e)
-print("Connected")
+    if(try_int(game_control)):
+        if int(game_control) == 1:
+            # Toda a lógica do jogo
+            s.send('START'.encode())
+            print('''
+                        Starting game...
+                ''')
+            cont_operations = 0
+            while(cont_operations < 6):
+                print ('Equation: {}?'.format(s.recv(1024).decode()))
+                resp = input('Answer: ')
+                while(not (try_int(resp))):
+                    print('The value you entered is not an integer.')
+                    resp = input('Answer: ')
+                s.send(resp.encode())
+                cont_operations = cont_operations + 1
 
+            print(s.recv(1024).decode())
 
-client_socket.setblocking(False)
+        elif int(game_control) == 2:
+            # Sair do jogo
+            s.send('EXIT'.encode())
+            print(''' 
+                        EXITING THE GAME...
+                ''')
+            s.close()
+            break
+        else:
+            print('''
+                    This option not exists. Try another.
+                ''')
+    else:
+        print('''
+                This option not exists. Try another.
+            ''')
 
-username = encode_decode(my_username, 1)
-username_header = encode_decode(f"{len(username): < {HEADER_LENGTH}}", 1)
-client_socket.send(username_header + username)
-
-while True:
-    message = input(f"{my_username} > ")
-
-    if message:
-        message = encode_decode(message, 1)
-        message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
-        client_socket.send(message_header + message)
-
-    try:
-        while True:
-            # recebendo coisas
-            username_header = client_socket.recv(HEADER_LENGTH)
-            if not len(username_header):
-                print("Conexão fechada pelo servidor")
-                sys.exit()
-            username_length = int(username_header.decode("utf-8").strip())
-            username = client_socket.recv(username_length).decode("utf-8")
-
-            message_header = client_socket.recv(HEADER_LENGTH)
-            message_length = int(message_header.decode("utf-8").strip())
-            message = client_socket.recv(message_length).decode("utf-8")
-            print(f"{username} > {message}")
-
-    except IOError as excepting:
-        if excepting.errno != errno.EAGAIN and excepting.errno != errno.EWOULDBLOCK:
-            print('Reading error', str(excepting))
-            sys.exit()
-        continue
-    except Exception as excepting:
-        print('General Error', str(excepting))
-        sys.exit()
+   

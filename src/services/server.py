@@ -1,119 +1,79 @@
-# coding=utf-8
-import logging
-import socket
-import operator
-# manage many of connections
-# Nos da capacidades de operar IO no nível do SO, porque sockest nos windows e linux são diferentes e com select este codigo
-# ira rodar no mac linux e windows.
-import select
-#you can use pickle for anything whereas like JSON
-import pickle
-import time
+import socket, threading
+from utils_old import *
 
-HEADER_LENGTH = 10
-# IP = 127.0.0.1 # Standard loopback interface address (localhost)
-# IP = "192.168.0.111"  # Standard loopback interface address (localhost)
-PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
+# Aqui a gente define a thread que vai ficar rodando para cada cliente conectado
+# Tudo que é definido aqui dentro será para tratar exclusivamente 1 cliente
+def run(conn):
+    conn.send('Type your name to begin: '.encode())
+    conn.send('Welcome {}!'.format(conn.recv(1024).decode()).encode())
+    data = conn.recv(1024) # receber informacao
 
-# retrieve local hostname
-local_hostname = socket.gethostname()
+    LAST_RESULT_EQUATION = None
+    RIGHT_ANSWER_QTD = 0
+    WRONG_ANSWER_QTD = 0
+    client_response = []
+        
+    if data.decode() == 'START':
+        # Logica de início do jogo
+        info_client = {
+            'operations': [],
+            'answersClient': [],
+            'answersServer': [],
+            'wrongAnswers': 0,
+            'rightAnswers': 0
+        }
+        
+        while(len(info_client['operations']) < 6):
+            equacao = fun_equacao() # Cria as equações e repostas
+            LAST_RESULT_EQUATION = equacao[1] # Resultado da equação
+            conn.send(equacao[0].encode())
+            response = conn.recv(1024).decode()
+            info_client['operations'].append(equacao[0])
+            info_client['answersServer'].append(equacao[1])
+            info_client['answersClient'].append(response)
+            if int(response) == LAST_RESULT_EQUATION:
+                info_client['rightAnswers'] = info_client['rightAnswers'] + 1
+            else:
+                info_client['wrongAnswers'] = info_client['wrongAnswers'] + 1
 
-# get fully qualified hostname
-local_fqdn = socket.getfqdn()
-
-# get the according IP address
-IP = socket.gethostbyname(local_hostname)
-
-# AF adrees family
-# SOCK_STREAM correspond to TCP protocol
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.settimeout(5)
-# with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-
-#irá nos permitir reconectar
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-# socket.gethostname() ié basicamente meu localhost
-# sockets são 'pontos' 'porta de esntrada' para estabelecer uma conexao e receber ou enviar dados
-server_socket.bind((IP, PORT))
-
-# posso passar um valor para criar uma fila.
-server_socket.listen(15)
-
-print(f"Listening on {(IP, PORT)}")
-
-# start manage list of clientes... we have sockest
-
-sockets_list = [server_socket]
-
-# dicionáiro de clientes, socket will be the  key e user data is the value
-clients = {}
-
-def receive_message(client_socket):
-    try:
-
-        message_header = client_socket.recv(HEADER_LENGTH)
-
-        # se não obtivermos nenhum dado o client fechara a conexao
-        if not len(message_header):
-            return False
-
-        message_length = int(message_header.decode("utf-8").strip())
-
-        return {"header": message_header, "data": client_socket.recv(message_length)}
-
-    except socket.timeout as err:
-        logging.error(err)
-    except socket.error as err:
-        logging.error(err)
+        conn.send('''
+                    ----------------------
+                   |        SCORE:       |
+                   |                      |
+                   |  Right answers: {}    |
+                   |  Wrong answers: {}    |
+                   |                      |
+                    ----------------------
+                    
+                Your answers: {}  
+                Right answers: {}   
+                      
+                '''.format(info_client['rightAnswers'], info_client['wrongAnswers'], info_client['answersClient'], info_client['answersServer']).encode())
+        
+    elif data.decode() == 'EXIT':
+        conns.remove(conn)
+        conn.close()
+        print('''Connected hosts: {}
+        '''.format(conns))
 
 
-while True:
-    # select dot select, takes 3 pramester, read list(sockets we gonna read, sockest we are gonnna read and wirte, sockets we might air on),
-    read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
+# É como se fosse nosso array de conexões, só pro server ter controle, e você também ;)
+conns = set() 
 
-    for notified_socket in read_sockets:
-        if notified_socket == server_socket:
-            client_socket, client_address = server_socket.accept()
-
-            user = receive_message(client_socket)
-            if user is False:
-                continue
-            sockets_list.append(client_socket)
-
-            clients[client_socket] = user
-
-            print(f"Accepted new connnection from {client_address[0]}:{client_address[1]} username:{user['data'].decode('utf-8')}")
-            '''
-            print("---------------------------------------------")
-            print("|                 START GAME                |")
-            print("|                 EXIT GAME                 |")
-            print("---------------------------------------------")
-            '''
-        else:
-            message = receive_message(notified_socket)
-
-            if message is False:
-                print(f"Closed connection from {clients[notified_socket]['data'].decode('utf-8')}")
-                sockets_list.remove(notified_socket)
-                del clients[notified_socket]
-                continue
-
-            user = clients[notified_socket]
-            print(f"Receive message from {user['data'].decode('utf-8')}: {message['data'].decode('utf-8')}")
-
-            for client_socket in clients:
-                # if client_socket != notified_socket: notificar os outros
-                if client_socket != notified_socket:
-                    # dizemos que o que queremos enviar pelo socket, como bytes('welcome', 'utf-8')
-                    client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
-
-    for notified_socket in exception_sockets:
-        sockets_list.remove(notified_socket)
-        del clients[notified_socket]
-
-
-
-
-
-
+# Capturamos o host, que no caso é a nossa propria máquina
+host = socket.gethostname()
+port = 1989
+with socket.socket() as sock: # Fazemos a ligacao TCP
+    # Faz com que o endereço possa ser reutilizado logo a seguir a fechar o servidor
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
+    sock.bind((host, port))
+    sock.listen(5) # Servidor ativo
+    print('Server started at {}:{}\n'.format(host, port))
+    while True:
+        conn, addr = sock.accept() # Aguarda até que algum cliente se conecte
+        threading.Thread(target=run, args=(conn,)).start() # Conexão é passada pra thread e já é iniciada
+        print("Client connected: {}".format(addr)) #Só pra mostrar os dados do cliente
+        conns.add(conn) # Adiciona essa conexão ao set de conexão
+        print('''Connected hosts:: {}
+        '''.format(conns))
+        
