@@ -9,7 +9,6 @@ from utils import *
 HEADER_LENGTH = 10
 PORT = 1989
 LOCAL_HOSTNAME = socket.gethostname()
-IP = socket.gethostbyname(LOCAL_HOSTNAME)
 MAX_BYTES_TO_RECEIVE = 2048
 TIMEOUT_MATCH = 60  # 1 min
 QTD_OPERATIONS = 6
@@ -29,12 +28,19 @@ inputText = '''
 
 MY_USERNAME = input("Digite seu Nome: ")
 
+option = input("\n Para acessar o servidor externo digite EXT, ou ENTER para servidor na mesma máquina: ")
+
+if option == "EXT":
+    ip = input("\n Digite o endreço de IP do servidor externo: ")
+else:
+    ip = socket.gethostbyname(LOCAL_HOSTNAME)
+
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((IP, PORT))
-    print(f"Conectado com sucesso em: {(IP, PORT)}!")
+    client_socket.connect((ip, PORT))
+    print(f"Conectado com sucesso em: {(ip, PORT)}!")
 except socket.error as e:
-    print(f"Não foi possível conectar no servidor: {(IP, PORT)}! ", e)
+    print(f"Não foi possível conectar no servidor: {(ip, PORT)}! ", e)
     sys.exit(1)
 
 # modo do socket não bloqueante para não esperar a conclusão de uma operação.
