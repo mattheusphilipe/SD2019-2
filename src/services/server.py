@@ -13,7 +13,7 @@ local_hostname = socket.gethostname()
 IP = socket.gethostbyname(local_hostname)
 HEADER_LENGTH = 10
 PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
-
+TIMEOUT = 1
 QTD_OPERATION = 6
 
 try:
@@ -62,7 +62,11 @@ def receive_message(client_sckt):
 while True:
     # select dot select, takes 3 pramester, read list(sockets we gonna read, sockest we are gonnna read and wirte,
     try:
-        read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
+        read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list, TIMEOUT)
+
+        if not (read_sockets or exception_sockets):
+            print(sys.stderr, ' timed out')
+            continue
     except select.error as e:
         print(e)
         break
