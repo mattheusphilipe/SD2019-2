@@ -20,6 +20,13 @@ the_time = 0
 elapsed_time = 0
 message_length = 0
 
+inputText = '''
+         ---------------------------------------------
+        |            START - TO START GAME            |
+        |            EXIT - TO EXIT GAME              |
+         ---------------------------------------------
+        |>> Your option:  '''
+
 MY_USERNAME = input("Digite seu Nome: ")
 
 try:
@@ -43,13 +50,18 @@ while True:
     if first_message:
         the_time = time.time()
         elapsed_time = 0
-        message = input('''
-         ---------------------------------------------
-        |            START - TO START GAME            |
-        |            EXIT - TO EXIT GAME              |
-         ---------------------------------------------
+        while True:
+            checking_message = str(input(inputText)).upper()
+            print("\n")
+            if checking_message == "EXIT":
+                message = False
+                client_socket.close()
+                break
+            elif checking_message == "START":
+                message = checking_message
+                break
 
-        |>> Your option:  ''')
+            print("Erro! Digite START ou EXIT")
 
         if message:
             message = encode_decode(message, 1)
@@ -90,6 +102,16 @@ while True:
                 break
 
             message = input(f"{MY_USERNAME} > ")
+
+            while not int_float(message, 2):
+                print("Digite apenas números, durante a partida, ou EXIT para sair")
+                message = input(f"{MY_USERNAME} > ")
+
+                if message.upper() == "EXIT":
+                    print('GAME OVER')
+                    client_socket.close()
+                    break
+
             if message:
                 message = encode_decode(message, 1)
                 message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)

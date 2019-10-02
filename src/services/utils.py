@@ -40,6 +40,7 @@ def fun_equacao():
         operador = "*"
     elif random_hardOperator == ops["/"]:
         operador = "/"
+
     for x in range(1):
         l = random.randint(1, 20)
 
@@ -48,6 +49,10 @@ def fun_equacao():
 
     equacao = ' '.join([str(l), operador, str(l1)])
 
-    resultado = random_hardOperator(l, l1)
+    if operador == "/":
+        resultado = float(random_hardOperator(l, l1))
+    else:
+        resultado = random_hardOperator(l, l1)
+
 
     return [equacao, resultado]
