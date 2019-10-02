@@ -21,86 +21,55 @@ Repositório com a finalidade de apresentar os códigos fontes referentes aos tr
 
 - [ ] teste de concorrência: demonstrando que múltiplos jogadores podem acessar o serviço ao mesmo tempo em partidas individuais ou em grupos sem comportamentos estranhos.
 - [ ] teste de recuperação de falhas: quando um componente falha e volta a executar, ele não leva o sistema a nenhum estado inesperado.
-- [ ] demonstração de funcionalidades: múltiplas partidas individuais ou em grupos.
+- [x] demonstração de funcionalidades: múltiplas partidas individuais ou em grupos.
+
+## Integrantes
+- Ivana Brito
+- Matheus Felipe Araújo
+- Bruno Torres
+- Gabriel Victor
 
 ## Capturas de tela:
 
 - Ainda não se aplica.
 
-## TO DO
+## Pré-requisito:
 
-- Definir estrutura que enviará os dados da partida ao usuário.
-- [x] Definir estrutura que suporte multiplayer ou vincular cada partida ao _socket_.
-- [x] Por enquanto não haverá níveis dificuldades para 1° entrega.
-- [x] 6 Operações por partida.
-- [x] Temporizador para a partida.
-- [x] Terá um temporizador por partida.
-- [x] Mostrar no final da partida lista das operações corretas/ erradas e quantidade de acerto/erro
-- [x] Opção de sair ou começar uma partida.
-- [x] Quando conectar perguntar se quer começar a partida.
+- Ter o Python instalado em seu sistema operacional, Windows ou Linux, sendo versão 3.7 ou acima
 
-## TO DO NOW
+## Arquivos do projeto
 
-- [ ] Multiplus clientes (socket) (conexão e desconexão)
-- Quando o cliente conectar:
-- [ ] Perguntar se quer iniciar uma partida ou logo após digitar o nome
-- [ ] Enviar para o cliente a partida
-- No servidor:
-- [ ] Fazer a lógica da partida
-- [ ] quando o cliente inicia uma partida, o servidor envia a equação da partida
-- [x] Função de equaçoes randomicas
-- [ ] servidor envia as operações e esperar o cliente responder
-- [ ] pegar a resposta e guardar na estrutura de resposta (array simples)
-- [ ] a cada operação gerado, guardar na estrutura daquele cliente as operações e respostas e comparar com a estrutura das respostas do cliente
-- [ ] Serão duas estruturas perguntas x respostas, a primeira estrutura (array) irá conter a operação e a resposta, e a segunda estrutura a resposta de cada operação
--[ ] criar uma variavel de acerto  e erro,
+_utils.py_
+Arquivo que contém as funções utilizadas no projeto, sendo elas:
+- def int_float(number, option)
+- def encode_decode(data, option)
+- def fun_equacao()
 
+_client.py_
+  Esse arquivo contém o menu inicial do jogo, é responsável pela conexão com o servidor, finaliza conexão com ele e encerra o jogo. Durante o jogo é responsável por capturar as respostas das equações. Também oferece para o usuário a opção de se conectar com o servidor externo, capturando do teclado o IP do mesmo. Além de ser responsável pelo timeout e pelo tratamento de entrada de dados.
 
+_server.py_
+  Responsável inicialmente por gerencias as conexões simultâneas, disponibiliza funções para receber mensagens, cria a estrutura para o armazenamento de dados(resposta do usuário, equação, resposta das equações, quantidade de acertos e erros) e identifica cada cliente e seus estados no jogo. Também envia as equações e recebe os resultados dos usuários, comparando-os com o resultado. Ao finalizar gera o placar e reinicia o jogo caso o usuário deseje. 
 
+## Como jogar uma partida
+  _Servidor executando na mesma máquina_
+  - [1] Abra um terminal e acesse a pasta `services` (caminho completo: `SD2019-2\src\services`
+  - [2] Execute o arquivo server.py  `Ex:(python server.py ou py -3.7 server.py)`
+  - [3] Abra outro terminal e acesse a pasta anterior novamente
+  - [4] Execute o arquivo client.py  `Ex:(python client.py ou py -3.7 client.py)`
+  - [5] No terminal digite o nome desejado e aperte `ENTER`
+  - [6] Na segunda linha, tecle `ENTER` novamente
+  - [7] Digite `START` para começar a partida ou `EXIT` para sair
+  - [8] Se escolheu a opção `START`, a primeira equação irá aparecer. São no total 7 operações
+  - [9] Após responder todas as operações, será mostrado na tela as seguintes informações:
+    - quais foram suas equações
+    - respostas que você digitou,
+    - respostas certas 
+    - quantidade de operações que você acertou e errou
+  - [10] Você pode começar o jogo novamente escolhendo `START` ou sair ao escolher `EXIT`
 
--------------------------TO US---------------------
-
-*Por enquanto fazer PR para develop-seunome => develop
-
-- padrão de nome branch> develop-seunome
-- se precisar de outra develop-seunome-algumacoisa
-
-Comandos para subir suas alterações:
-
-- git add . : adiciona todos os arquivos
-- git add caminho/nome_arquivo: para adicionar somente um arquivo especifico (pega o caminho e o nome no git status)
-
-- git commit -m "digitar mensagem aqui" (Fazer commit local)
-
-- git push origin nome_branch (enviar commit para a branch remota)
-
-Abrir Pull no git (clicar em pull request, geralmente o novo commit ele pergunta se quer abrir um pull request)
-
-Colcoar os revisores e o assignee para você que criou
-
-Comando para criar nova branch:
-
-- git checkout -b nome_da_sua_branch (nao precisa ser com aspas) 
-
-Comando para mudar de branch:
-
-- git checkout nome_da_branch
-
-
-Comando para saber o status dos arquivos:
-
-- git status
-
-Comando saber em que branch estou
-
-- git branch (a sua é a verdinha)
-
------------Atualizar a branch -----------
-
-Todo dia ver se tem alguma atualização 
-
-- git pull origin develop --rebase
-
-resolve os conflitos se tiver
-
-------- caso no Pull request indique conflito---
+_Servidor executando em outro computador_
+- Execute os 5 primeiros passos anteriores, exceto executar o servidor
+  - Escolha `EXT`
+  - Digite o _IP_ da máquina na qual o servidor está sendo executado
+  - Execute os mesmos passos a partir do 7º passo anterior
