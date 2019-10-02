@@ -27,7 +27,7 @@ inputText = '''
 
 MY_USERNAME = input("Digite seu Nome: ")
 
-option = str(input("\n Para acessar o servidor externo digite EXT, ou ENTER para servidor na mesma máquina: "))
+option = str(input("\n Para acessar o servidor externo digite EXT, ou pressione ENTER para servidor na mesma máquina: "))
 
 if option.upper() == "EXT":
     ip = input("\n Digite o endereço de IP do servidor externo: ")
