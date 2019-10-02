@@ -43,13 +43,17 @@ while True:
     if first_message:
         the_time = time.time()
         elapsed_time = 0
-        message = input('''
+        while True:
+            checking_message = str(input('''
          ---------------------------------------------
         |            START - TO START GAME            |
         |            EXIT - TO EXIT GAME              |
          ---------------------------------------------
-
-        |>> Your option:  ''')
+        |>> Your option:  ''')).upper()
+            if checking_message in "STARTEXIT":
+                message = checking_message
+                break
+            print("Erro! Digite START ou EXIT")
 
         if message:
             message = encode_decode(message, 1)
