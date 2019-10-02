@@ -2,7 +2,6 @@
 import socket
 import errno
 import sys
-import time
 from utils import *
 
 HEADER_LENGTH = 10
@@ -14,8 +13,6 @@ QTD_OPERATIONS = 6
 MAX_LENGTH_MESSAGE = 12
 
 first_message = True
-the_time = 0
-elapsed_time = 0
 message_length = 0
 
 inputText = '''
@@ -53,8 +50,6 @@ message = None
 
 while True:
     if first_message:
-        the_time = time.time()
-        elapsed_time = 0
         while True:
             checking_message = str(input(inputText)).upper()
             print("\n")
@@ -77,7 +72,6 @@ while True:
 
     try:
         while True:
-            elapsed_time = time.time() - the_time
             username_header = client_socket.recv(HEADER_LENGTH)
             if not len(username_header):
                 print("Conexão fechada pelo servidor")
@@ -93,13 +87,6 @@ while True:
 
             # Quando mostrar o resultado fecha a partida atual
             if message_length > MAX_LENGTH_MESSAGE:
-                first_message = True
-                message_length = 0
-                break
-
-            # Se esgotou o tempo finaliza a partida atual
-            if elapsed_time > TIMEOUT_MATCH:
-                print("Tempo esgotado")
                 first_message = True
                 message_length = 0
                 break
