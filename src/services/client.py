@@ -37,7 +37,7 @@ except socket.error as e:
     print(f"Não foi possível conectar no servidor: {(IP, PORT)}! ", e)
     sys.exit(1)
 
-# False ou (1 # prevents timeout)
+# modo do socket não bloqueante para não esperar a conclusão de uma operação.
 client_socket.setblocking(False)
 
 username = encode_decode(MY_USERNAME, 1)
