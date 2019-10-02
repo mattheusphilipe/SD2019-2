@@ -160,8 +160,8 @@ while True:
                                             '''.format(client_response.get(notified_socket)['rightAnswers'],
                                                        client_response.get(notified_socket)['wrongAnswers'],
                                                        client_response.get(notified_socket)['answers'],
-                                                       client_response.get(notified_socket)['result_operation'],
-                                                       "\n\t\t\t\t\t\t\t".join([str(elem) for elem in client_response.get(notified_socket)['operations']]))
+                                                       client_response.get(notified_socket)['result_operation'][:-1],
+                                                       "\n\t\t\t\t\t\t\t".join([str(elem) for elem in client_response.get(notified_socket)['operations'][:-1]]))
                             , "utf-8")
 
                         client_socket.send(user['header'] + user['data'] + message['header'] + the_score)
