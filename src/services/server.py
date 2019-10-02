@@ -13,7 +13,7 @@ local_hostname = socket.gethostname()
 IP = socket.gethostbyname(local_hostname)
 HEADER_LENGTH = 10
 PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
-TIMEOUT = 1
+TIMEOUT = 5 # número de segundos para aguardar antes de interromper o monitoramento, se nenhum canal estiver ativo.
 QTD_OPERATION = 6
 
 try:
