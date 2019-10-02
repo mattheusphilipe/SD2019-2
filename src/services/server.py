@@ -18,14 +18,14 @@ QTD_OPERATION = 6
 
 try:
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.settimeout(5)
-
-    # irá nos permitir reconectar
-    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind((IP, PORT))
-    server_socket.listen(15)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # irá nos permitir reconectar
+    server_socket.bind((IP, PORT)) # fazer a ligação do socket ao endereço IP + PORTA
+    server_socket.listen(15) # Esperando conexõe para esse socket
     print(f"Listening on {(IP, PORT)}")
 
+except socket.timeout as e:
+    print(e)
+    sys.exit(1)
 except socket.error as e:
     print(e)
     sys.exit(1)
@@ -33,9 +33,9 @@ except socket.error as e:
 # start manage list of clientes... we have sockest
 
 sockets_list = [server_socket]
-# dicionário de clientes, socket será a chave e a o usuário será o valor da chave
-clients = {}
-client_response = {}
+
+clients = {} # dicionário de clientes, socket será a chave e a o usuário será o valor da chave (pega os dados do usuário)
+client_response = {} # dicionário para armazenar a estrutura do jogo do usuário (armazena dados do usuário)
 message = None
 
 
