@@ -28,10 +28,10 @@ inputText = '''
 
 MY_USERNAME = input("Digite seu Nome: ")
 
-option = input("\n Para acessar o servidor externo digite EXT, ou ENTER para servidor na mesma máquina: ")
+option = str(input("\n Para acessar o servidor externo digite EXT, ou ENTER para servidor na mesma máquina: "))
 
-if option == "EXT":
-    ip = input("\n Digite o endreço de IP do servidor externo: ")
+if option.upper() == "EXT":
+    ip = input("\n Digite o endereço de IP do servidor externo: ")
 else:
     ip = socket.gethostbyname(LOCAL_HOSTNAME)
 
