@@ -9,12 +9,12 @@ from utils import *
 # ira rodar no mac linux e windows.
 import select
 
-# retrieve local hostname
 local_hostname = socket.gethostname()
-# get the according IP address
 IP = socket.gethostbyname(local_hostname)
 HEADER_LENGTH = 10
 PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
+
+QTD_OPERATION = 6
 
 try:
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,18 +24,16 @@ try:
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((IP, PORT))
     server_socket.listen(15)
+    print(f"Listening on {(IP, PORT)}")
 
 except socket.error as e:
     print(e)
     sys.exit(1)
 
-
-print(f"Listening on {(IP, PORT)}")
-
 # start manage list of clientes... we have sockest
 
 sockets_list = [server_socket]
-# dicionáiro de clientes, socket will be the  key e user data is the value
+# dicionário de clientes, socket será a chave e a o usuário será o valor da chave
 clients = {}
 client_response = {}
 message = None
@@ -63,7 +61,6 @@ def receive_message(client_sckt):
 
 while True:
     # select dot select, takes 3 pramester, read list(sockets we gonna read, sockest we are gonnna read and wirte,
-    # sockets we might air on),
     try:
         read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
     except select.error as e:
@@ -85,7 +82,7 @@ while True:
             clients[client_socket] = user
 
             print(
-                f"Nova conexão de {client_address[0]}:{client_address[1]} username:{user['data'].decode('utf-8')}")
+                f"Nova conexão de {client_address[0]}:{client_address[1]}@{user['data'].decode('utf-8')}")
 
         else:
 
@@ -95,8 +92,7 @@ while True:
                     'answers': [],
                     'result_operation': [],
                     'wrongAnswers': 0,
-                    'rightAnswers': 0,
-                    'isStarted': False
+                    'rightAnswers': 0
                 }
 
             for client_socket in list(clients):
@@ -105,22 +101,19 @@ while True:
                     message = receive_message(notified_socket)
 
                     if message is False:
-                        print(f"Conexão fechada por {clients[notified_socket]['data'].decode('utf-8')}")
+                        print(f"Conexão fechada por {encode_decode(clients[notified_socket]['data'], 2)}")
                         sockets_list.remove(notified_socket)
                         del clients[notified_socket]
                         continue
 
-                    if encode_decode(message['data'], 2) == "START" and client_response.get(notified_socket)['isStarted'] is False:
-                        client_response.get(notified_socket)['isStarted'] = True
-
                     user = clients[notified_socket]
-                    print(f"Mensagem recebida de {user['data'].decode('utf-8')}: {message['data'].decode('utf-8')}")
+                    print(f"Mensagem recebida de {encode_decode(user['data'], 2)}: {encode_decode(message['data'], 2)}")
 
                     client_operation_length = len(client_response.get(notified_socket)['answers'])
 
-                    if client_operation_length < 6:
-
+                    if client_operation_length <= QTD_OPERATION:
                         answer = encode_decode(message['data'], 2)
+
                         if answer != "START":
                             # frescura se estiver dando problema excluir
                             last_operator = client_response.get(notified_socket)['operations'][-1].split()[1]
@@ -137,7 +130,8 @@ while True:
                                 client_response.get(notified_socket)['wrongAnswers'] += 1
                         # dizemos que o que queremos enviar pelo socket, como bytes('welcome', 'utf-8')
                         client_socket.send(
-                            user['header'] + user['data'] + message['header'] + bytes(f"{equation[0]} = ?", "utf-8"))
+                            user['header'] + user['data'] + message['header'] + bytes(f"{equation[0]} = ?", "utf-8")
+                        )
 
                         client_response.get(notified_socket)['result_operation'].append(equation[1])
                         client_response.get(notified_socket)['operations'].append(f"{equation[0]}: {equation[1]}")
