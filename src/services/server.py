@@ -13,14 +13,16 @@ local_hostname = socket.gethostname()
 IP = socket.gethostbyname(local_hostname)
 HEADER_LENGTH = 10
 PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
-TIMEOUT = 5 # número de segundos para aguardar antes de interromper o monitoramento, se nenhum canal estiver ativo.
+TIMEOUT = 30 # número de segundos para aguardar antes de interromper o monitoramento, se nenhum canal estiver ativo.
 QTD_OPERATION = 6
 
 try:
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # irá nos permitir reconectar
-    server_socket.bind((IP, PORT)) # fazer a ligação do socket ao endereço IP + PORTA
-    server_socket.listen(15) # Esperando conexõe para esse socket
+    server_socket.bind((IP, PORT))  # fazer a ligação do socket ao endereço IP + PORTA
+    server_socket.listen(15)  # Esperando conexõe para esse socket
+    server_socket.setblocking(True)  #socket no modo de bloqueio, o controle so é retornado ao meu programa após a conclusão da operação em curso.
+    server_socket.settimeout(0.5)
     print(f"Listening on {(IP, PORT)}")
 
 except socket.timeout as e:
@@ -65,7 +67,7 @@ while True:
         read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list, TIMEOUT)
 
         if not (read_sockets or exception_sockets):
-            print(sys.stderr, ' timed out')
+            print('Canal de dados vazio')
             continue
     except select.error as e:
         print(e)
