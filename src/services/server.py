@@ -32,19 +32,16 @@ except socket.error as e:
     print(e)
     sys.exit(1)
 
-# start manage list of clientes... we have sockest
-
 sockets_list = [server_socket]
 
 clients = {} # dicionário de clientes, socket será a chave e a o usuário será o valor da chave (pega os dados do usuário)
-client_response = {} # dicionário para armazenar a estrutura do jogo do usuário (armazena dados do usuário)
+client_response = {}  # dicionário para armazenar a estrutura do jogo do usuário (armazena dados do usuário)
 message = None
 
 
 def receive_message(client_sckt):
     try:
         message_header = client_sckt.recv(HEADER_LENGTH)
-        # se não obtivermos nenhum dado o client fechara a conexao ?
         if not len(message_header):
             return False
 
@@ -62,7 +59,6 @@ def receive_message(client_sckt):
 
 
 while True:
-    # select dot select, takes 3 pramester, read list(sockets we gonna read, sockest we are gonnna read and wirte,
     try:
         read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list, TIMEOUT)
 
@@ -121,7 +117,6 @@ while True:
                         answer = encode_decode(message['data'], 2)
 
                         if answer != "START":
-                            # frescura se estiver dando problema excluir
                             last_operator = client_response.get(notified_socket)['operations'][-1].split()[1]
                             client_response.get(notified_socket)['answers'].append(answer)
 
@@ -134,7 +129,6 @@ while True:
                                 client_response.get(notified_socket)['rightAnswers'] += 1
                             else:
                                 client_response.get(notified_socket)['wrongAnswers'] += 1
-                        # dizemos que o que queremos enviar pelo socket, como bytes('welcome', 'utf-8')
                         client_socket.send(
                             user['header'] + user['data'] + message['header'] + bytes(f"{equation[0]} = ?", "utf-8")
                         )

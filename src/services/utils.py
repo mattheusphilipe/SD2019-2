@@ -12,7 +12,7 @@ def int_float(number, option):
         elif option == 2:
             c = float(number)
         return True
-    except:
+    except Exception:
         return False
 
 

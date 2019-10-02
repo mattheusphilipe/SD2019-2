@@ -1,5 +1,4 @@
 # coding=utf-8
-# como tratar quando excedemos o buffer, cooo lidar com sockets que excedeam o buffer e continuar com a conexão aberta
 import socket
 import errno
 import sys
@@ -10,7 +9,7 @@ HEADER_LENGTH = 10
 PORT = 1989
 LOCAL_HOSTNAME = socket.gethostname()
 MAX_BYTES_TO_RECEIVE = 2048
-TIMEOUT_MATCH = 60  # 1 min
+TIMEOUT_MATCH = 60  # 1 min para execução de cada partida
 QTD_OPERATIONS = 6
 MAX_LENGTH_MESSAGE = 12
 
@@ -43,7 +42,7 @@ except socket.error as e:
     print(f"Não foi possível conectar no servidor: {(ip, PORT)}! ", e)
     sys.exit(1)
 
-# modo do socket não bloqueante para não esperar a conclusão de uma operação.
+# modo do socket não bloqueante para não ter que esperar a conclusão de uma operação.
 client_socket.setblocking(False)
 
 username = encode_decode(MY_USERNAME, 1)
@@ -77,10 +76,8 @@ while True:
         first_message = False
 
     try:
-        # while elapsed_time < TIMEOUT_MATCH and message_length < MAX_LENGTH_MESSAGE:
         while True:
             elapsed_time = time.time() - the_time
-            # recebendo coisas
             username_header = client_socket.recv(HEADER_LENGTH)
             if not len(username_header):
                 print("Conexão fechada pelo servidor")
@@ -92,7 +89,7 @@ while True:
             message = client_socket.recv(MAX_BYTES_TO_RECEIVE).decode("utf-8")
             message_length = len(message)
 
-            print(f"{username} > {message}")  # trocar username por servidor
+            print(f"{username} > {message}")
 
             # Quando mostrar o resultado fecha a partida atual
             if message_length > MAX_LENGTH_MESSAGE:
@@ -133,6 +130,6 @@ while True:
         sys.exit(1)
 
     except KeyboardInterrupt:
-        print('Interrupted.')
+        print('Interrupted. Socket closed')
         client_socket.close()
         break
