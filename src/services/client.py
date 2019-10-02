@@ -21,11 +21,11 @@ elapsed_time = 0
 message_length = 0
 
 inputText = '''
-         ---------------------------------------------
-        |            START - TO START GAME            |
-        |            EXIT - TO EXIT GAME              |
-         ---------------------------------------------
-        |>> Your option:  '''
+                                       ---------------------------------------------
+                                       |            START - TO START GAME            |
+                                       |            EXIT - TO EXIT GAME              |
+                                       ---------------------------------------------
+                                       |>> Your option:  '''
 
 MY_USERNAME = input("Digite seu Nome: ")
 

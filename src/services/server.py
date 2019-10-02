@@ -136,8 +136,29 @@ while True:
                         client_response.get(notified_socket)['result_operation'].append(equation[1])
                         client_response.get(notified_socket)['operations'].append(f"{equation[0]}: {equation[1]}")
                     else:
-                        client_socket.send(user['header'] + user['data'] + message['header'] + bytes(
-                            f"{client_response[notified_socket]} \n END GAME BITCH \n ", "utf-8"))
+
+                        the_score = bytes(
+                            '''
+                                                ----------------------
+                                               |        SCORE:        |
+                                               |                      |
+                                               |  Right answers: {}    |
+                                               |  Wrong answers: {}    |
+                                               |                      |
+                                                ----------------------
+    
+                                            Your answers: {}  
+                                            Right answers: {}   
+                                            Operations: \n\t\t\t\t\t\t\t{}
+    
+                                            '''.format(client_response.get(notified_socket)['rightAnswers'],
+                                                       client_response.get(notified_socket)['wrongAnswers'],
+                                                       client_response.get(notified_socket)['answers'],
+                                                       client_response.get(notified_socket)['result_operation'],
+                                                       "\n\t\t\t\t\t\t\t".join([str(elem) for elem in client_response.get(notified_socket)['operations']]))
+                            , "utf-8")
+
+                        client_socket.send(user['header'] + user['data'] + message['header'] + the_score)
                         client_response.pop(notified_socket)
 
     for notified_socket in exception_sockets:
