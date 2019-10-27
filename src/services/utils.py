@@ -1,5 +1,19 @@
+# coding=utf-8
 import operator
 import random
+
+
+# funcão para tentar conversão de um número par inteiro ou real
+
+def int_float(number, option):
+    try:
+        if option == 1:
+            c = int(number)
+        elif option == 2:
+            c = float(number)
+        return True
+    except Exception:
+        return False
 
 
 def encode_decode(data, option):
@@ -26,14 +40,36 @@ def fun_equacao():
         operador = "*"
     elif random_hardOperator == ops["/"]:
         operador = "/"
-    for x in range(1):
-        l = random.randint(1, 20)
 
-    for x in range(1):
-        l1 = random.randint(1, 20)
+    numbers = []
+    for x in range(2):
+        numbers.append(random.randint(1, 20))
 
-    equacao = ' '.join([str(l), operador, str(l1)])
+    equacao = ' '.join([str(numbers[0]), operador, str(numbers[1])])
 
-    resultado = random_hardOperator(l, l1)
+    if operador == "/":
+        resultado = float(random_hardOperator(numbers[0], numbers[1]))
+    else:
+        resultado = random_hardOperator(numbers[0], numbers[1])
 
-    return [equacao, resultado];
+    return [equacao, resultado]
+
+
+def round_structure():
+    round = {}
+    i = 0
+    while i < 7:
+        equation = fun_equacao()
+        round[i] = {
+            'operation': equation[0],
+            'result_operation': equation[1],
+        }
+        i += 1
+
+    return round
+
+
+def create_ranking_time(client, ranking_list: []):
+    totalTimeClient = sum(client.get('timeRound'))
+    ranking_list.append((client.get('clientName'), client.get('rightAnswers'), totalTimeClient))
+    ranking_list.sort(key=operator.itemgetter(1), reverse=True)

@@ -1,38 +1,46 @@
 # coding=utf-8
-# como tratar quando excedemos o buffer, cooo lidar com sockets que excedeam o buffer e continuar com a conexão aberta
 import socket
 import errno
 import sys
 from utils import *
 
-#tirando o comentario
-
 HEADER_LENGTH = 10
 PORT = 1989
-IS_CONNECT_ERROR = False
-local_hostname = socket.gethostname()
-# get the according IP address
-# IP = "127.0.0.1" # Standard loopback interface address (localhost)
-IP = socket.gethostbyname(local_hostname)
+LOCAL_HOSTNAME = socket.gethostname()
 MAX_BYTES_TO_RECEIVE = 2048
-FIRST_MESSAGE = True
-# para conectar no servidor que você estiver executando
+TIMEOUT_MATCH = 60  # 1 min para execução de cada partida
+QTD_OPERATIONS = 6
+MAX_LENGTH_MESSAGE = 12
 
-MY_USERNAME = input("Username: ")
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+first_message = True
+message_length = 0
+
+inputText = '''
+                                       ---------------------------------------------
+                                       |            START - TO START GAME            |
+                                       |            EXIT - TO EXIT GAME              |
+                                       ---------------------------------------------
+                                       |>> Your option:  '''
+
+MY_USERNAME = input("Digite seu Nome: ")
+
+option = str(input("\n Para acessar o servidor externo digite EXT, ou pressione ENTER para servidor na mesma máquina: "))
+
+if option.upper() == "EXT":
+    ip = input("\n Digite o endereço de IP do servidor externo: ")
+else:
+    ip = socket.gethostbyname(LOCAL_HOSTNAME)
 
 try:
-    client_socket.connect((IP, PORT))
-except Exception as e:
-    IS_CONNECT_ERROR = True
-    print("Cannot connect to the server:", e)
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((ip, PORT))
+    print(f"Conectado com sucesso em: {(ip, PORT)}!")
+except socket.error as e:
+    print(f"Não foi possível conectar no servidor: {(ip, PORT)}! ", e)
+    sys.exit(1)
 
-if IS_CONNECT_ERROR is False:
-    print("Connected")
-
-# False ou (1 # prevents timeout)
+# modo do socket não bloqueante para não ter que esperar a conclusão de uma operação.
 client_socket.setblocking(False)
-
 
 username = encode_decode(MY_USERNAME, 1)
 username_header = encode_decode(f"{len(username): < {HEADER_LENGTH}}", 1)
@@ -41,19 +49,29 @@ client_socket.send(username_header + username)
 message = None
 
 while True:
+    if first_message:
+        while True:
+            checking_message = str(input(inputText)).upper()
+            print("\n")
+            if checking_message == "EXIT":
+                message = False
+                client_socket.close()
+                break
+            elif checking_message == "START":
+                message = checking_message
+                break
 
-    if FIRST_MESSAGE:
-        message = input(f"{MY_USERNAME} > ")
+            print("Erro! Digite START ou EXIT")
 
         if message:
             message = encode_decode(message, 1)
             message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
             client_socket.send(message_header + message)
 
+        first_message = False
+
     try:
-        FIRST_MESSAGE = False
         while True:
-            # recebendo coisas
             username_header = client_socket.recv(HEADER_LENGTH)
             if not len(username_header):
                 print("Conexão fechada pelo servidor")
@@ -63,8 +81,29 @@ while True:
 
             message_header = client_socket.recv(HEADER_LENGTH)
             message = client_socket.recv(MAX_BYTES_TO_RECEIVE).decode("utf-8")
-            print(f"{username} > {message}") # trocar username por servidor
+            message_length = len(message)
+
+            print(f"{username} > {message}")
+
+            # Quando mostrar o resultado fecha a partida atual
+            if message_length > MAX_LENGTH_MESSAGE:
+                if message.find("TODOS FINALIZARAM A PARTIDA") != -1:
+                    first_message = True #modified by firm
+                    #print('hey there: ')
+                message_length = 0
+                break
+
             message = input(f"{MY_USERNAME} > ")
+
+            while not int_float(message, 2):
+                print("Digite apenas números, durante a partida, ou EXIT para sair")
+                message = input(f"{MY_USERNAME} > ")
+
+                if message.upper() == "EXIT":
+                    print('GAME OVER')
+                    client_socket.close()
+                    break
+
             if message:
                 message = encode_decode(message, 1)
                 message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
@@ -73,8 +112,13 @@ while True:
     except IOError as excepting:
         if excepting.errno != errno.EAGAIN and excepting.errno != errno.EWOULDBLOCK:
             print('Reading error', str(excepting))
-            sys.exit()
+            sys.exit(1)
         continue
     except Exception as excepting:
         print('General Error', str(excepting))
-        sys.exit()
+        sys.exit(1)
+
+    except KeyboardInterrupt:
+        print('Interrupted. Socket closed')
+        client_socket.close()
+        break
