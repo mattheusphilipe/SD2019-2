@@ -4,7 +4,8 @@ import socket
 import sys
 import time
 
-from utils import *
+#from utils import *
+import utils
 # manage many of connections
 # Nos da capacidades de operar IO no nível do SO, porque sockest nos windows e linux são diferentes e com select este codigo
 # ira rodar no mac linux e windows.
@@ -109,7 +110,7 @@ while True:
                     'rightAnswers': 0,
                     'roundNumberClient': 0,
                     'timeRound': [],
-                    'clientName': encode_decode(user['data'], 2)
+                    'clientName': utils.encode_decode(user['data'], 2)
                 }
 
             for client_socket in list(clients):
@@ -118,22 +119,22 @@ while True:
                     message = receive_message(notified_socket)
 
                     if message is False:
-                        print(f"Conexão fechada por {encode_decode(clients[notified_socket]['data'], 2)}")
+                        print(f"Conexão fechada por {utils.encode_decode(clients[notified_socket]['data'], 2)}")
                         sockets_list.remove(notified_socket)
                         del clients[notified_socket]
                         continue
 
                     user = clients[notified_socket]
-                    print(f"Mensagem recebida de {encode_decode(user['data'], 2)}: {encode_decode(message['data'], 2)}")
+                    print(f"Mensagem recebida de {utils.encode_decode(user['data'], 2)}: {utils.encode_decode(message['data'], 2)}")
 
                     client_operation_length = len(client_response.get(notified_socket)['answers'])
 
                     if client_operation_length <= QTD_OPERATION and client_response.get(notified_socket)[
                         'roundNumberClient'] < 7:
-                        answer = encode_decode(message['data'], 2)
+                        answer = utils.encode_decode(message['data'], 2)
                         print(answer)
                         if answer == "START" and len(roundEquation) == 0:
-                            roundEquation = round_structure()
+                            roundEquation = utils.round_structure()
 
                         if answer != "START":
                             last_operator = client_response.get(notified_socket)['operations'][-1].split()[1]
@@ -184,10 +185,10 @@ while True:
                                             '''.format(client_response.get(notified_socket)['rightAnswers'],
                                                        client_response.get(notified_socket)['wrongAnswers'],
                                                        client_response.get(notified_socket)['answers'],
-                                                       client_response.get(notified_socket)['result_operation'],
+                                                       client_response.get(notified_socket)['result_operation'][:-1],
                                                        "\n\t\t\t\t\t\t\t".join([str(elem) for elem in
                                                                                 client_response.get(notified_socket)[
-                                                                                    'operations']]),
+                                                                                    'operations'][:-1]]),
                                                        "\n\t\t\t\t\t\t\t".join(
                                                            [f"{time.ctime(elem)}".split()[-2] for elem in
                                                             client_response.get(notified_socket)[
@@ -196,12 +197,13 @@ while True:
                             , "utf-8")
 
                         client_socket.send(user['header'] + user['data'] + message['header'] + the_score)
+                        # if len(clients) > 1: evitar mandar ranking com 1 jogador
                         qtdFinished += 1
                         allNotified += 1
                         if len(client_response) == 1:
                             lastOne = clients.get(notified_socket)
 
-                        create_ranking_time(client_response.get(notified_socket), ranking_list)
+                        utils.create_ranking_time(client_response.get(notified_socket), ranking_list)
                         client_response.pop(notified_socket)
 
     if qtdFinished > 0:
@@ -234,7 +236,7 @@ while True:
                                                 ranking_list]))
 
             client_socket.send(
-                user['header'] + user['data'] + message['header'] + bytes("TODOS FINALIZARAM A PARTIDA \n" + scoreboard,
+                user['header'] + user['data'] + message['header'] + bytes("PARTIDA FINALIZADA \n" + scoreboard,
                                                                           "utf-8"))
         allNotified = 0
         ranking_list = []

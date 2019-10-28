@@ -2,7 +2,8 @@
 import socket
 import errno
 import sys
-from utils import *
+#from utils import *
+import utils
 
 HEADER_LENGTH = 10
 PORT = 1989
@@ -42,8 +43,8 @@ except socket.error as e:
 # modo do socket não bloqueante para não ter que esperar a conclusão de uma operação.
 client_socket.setblocking(False)
 
-username = encode_decode(MY_USERNAME, 1)
-username_header = encode_decode(f"{len(username): < {HEADER_LENGTH}}", 1)
+username = utils.encode_decode(MY_USERNAME, 1)
+username_header = utils.encode_decode(f"{len(username): < {HEADER_LENGTH}}", 1)
 client_socket.send(username_header + username)
 
 message = None
@@ -64,8 +65,8 @@ while True:
             print("Erro! Digite START ou EXIT")
 
         if message:
-            message = encode_decode(message, 1)
-            message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
+            message = utils.encode_decode(message, 1)
+            message_header = utils.encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
             client_socket.send(message_header + message)
 
         first_message = False
@@ -87,7 +88,7 @@ while True:
 
             # Quando mostrar o resultado fecha a partida atual
             if message_length > MAX_LENGTH_MESSAGE:
-                if message.find("TODOS FINALIZARAM A PARTIDA") != -1:
+                if message.find("PARTIDA FINALIZADA") != -1:
                     first_message = True #modified by firm
                     #print('hey there: ')
                 message_length = 0
@@ -95,7 +96,7 @@ while True:
 
             message = input(f"{MY_USERNAME} > ")
 
-            while not int_float(message, 2):
+            while not utils.int_float(message, 2):
                 print("Digite apenas números, durante a partida, ou EXIT para sair")
                 message = input(f"{MY_USERNAME} > ")
 
@@ -105,8 +106,8 @@ while True:
                     break
 
             if message:
-                message = encode_decode(message, 1)
-                message_header = encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
+                message = utils.encode_decode(message, 1)
+                message_header = utils.encode_decode(f"{len(message):< {HEADER_LENGTH}}", 1)
                 client_socket.send(message_header + message)
 
     except IOError as excepting:
