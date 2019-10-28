@@ -2,6 +2,7 @@
 import operator
 import random
 
+QTD_OPERATION = 6
 
 # funcão para tentar conversão de um número par inteiro ou real
 
@@ -58,7 +59,7 @@ def fun_equacao():
 def round_structure():
     round = {}
     i = 0
-    while i < 7:
+    while i < QTD_OPERATION + 1:
         equation = fun_equacao()
         round[i] = {
             'operation': equation[0],

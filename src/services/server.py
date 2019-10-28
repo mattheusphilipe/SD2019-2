@@ -16,7 +16,6 @@ HEADER_LENGTH = 10
 PORT = 1989  # Port to listen on (non-privileged ports are > 1023)
 TIMEOUT = 30  # número de segundos para aguardar antes de interromper o monitoramento, se nenhum canal estiver ativo.
 QTD_OPERATION = 6
-roundNumber = 0
 allNotified = 0
 
 try:
@@ -41,11 +40,10 @@ sockets_list = [server_socket]
 clients = {}  # dicionário de clientes, socket será a chave e a o usuário será o valor da chave (pega os dados do usuário)
 client_response = {}  # dicionário para armazenar a estrutura do jogo do usuário (armazena dados do usuário)
 message = None
-round = {}
 qtdFinished = 0
 user = None
 lastOne = {}
-roundEquation = round_structure()
+roundEquation = {}
 the_time = 0
 elapsed_time = 0
 ranking_list = []
@@ -84,6 +82,7 @@ while True:
         break
 
     elapsed_time = time.time() - the_time
+    print('elapsed', elapsed_time, 'the_time', the_time)
 
     for notified_socket in read_sockets:
         if notified_socket == server_socket:
@@ -132,6 +131,9 @@ while True:
                     if client_operation_length <= QTD_OPERATION and client_response.get(notified_socket)[
                         'roundNumberClient'] < 7:
                         answer = encode_decode(message['data'], 2)
+                        print(answer)
+                        if answer == "START" and len(roundEquation) == 0:
+                            roundEquation = round_structure()
 
                         if answer != "START":
                             last_operator = client_response.get(notified_socket)['operations'][-1].split()[1]
@@ -186,9 +188,10 @@ while True:
                                                        "\n\t\t\t\t\t\t\t".join([str(elem) for elem in
                                                                                 client_response.get(notified_socket)[
                                                                                     'operations']]),
-                                                       "\n\t\t\t\t\t\t\t".join([f"{time.ctime(elem)}".split()[-2] for elem in
-                                                                    client_response.get(notified_socket)[
-                                                                        'timeRound']])
+                                                       "\n\t\t\t\t\t\t\t".join(
+                                                           [f"{time.ctime(elem)}".split()[-2] for elem in
+                                                            client_response.get(notified_socket)[
+                                                                'timeRound']])
                                                        )
                             , "utf-8")
 
@@ -226,12 +229,16 @@ while True:
 
                                 '''.format(ranking_list[0][0],
                                            "\n\t\t\t\t\t\t\t".join(
-                                               [str(elem[0] + ': ' + f"{elem[1]}" + ', ' + f"{time.ctime(elem[2])}".split()[-2].split()[-1]) for elem in ranking_list]))
+                                               [str(elem[0] + ': ' + f"{elem[1]}" + ', ' +
+                                                    f"{time.ctime(elem[2])}".split()[-2].split()[-1]) for elem in
+                                                ranking_list]))
 
             client_socket.send(
                 user['header'] + user['data'] + message['header'] + bytes("TODOS FINALIZARAM A PARTIDA \n" + scoreboard,
                                                                           "utf-8"))
         allNotified = 0
+        ranking_list = []
+        roundEquation = {}
 
     for notified_socket in exception_sockets:
         sockets_list.remove(notified_socket)
