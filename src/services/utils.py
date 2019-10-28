@@ -1,8 +1,10 @@
 # coding=utf-8
 import operator
 import random
+import time
 
 QTD_OPERATION = 6
+
 
 # funcão para tentar conversão de um número par inteiro ou real
 
@@ -71,6 +73,7 @@ def round_structure():
 
 
 def create_ranking_time(client, ranking_list: []):
-    totalTimeClient = sum(client.get('timeRound'))
-    ranking_list.append((client.get('clientName'), client.get('rightAnswers'), totalTimeClient))
+    # falta ordenar pelo tempo também caso de desempate
+    spentTimeClient = time.time() - client.get('startTime')
+    ranking_list.append((client.get('clientName'), client.get('rightAnswers'), spentTimeClient))
     ranking_list.sort(key=operator.itemgetter(1), reverse=True)

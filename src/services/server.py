@@ -3,6 +3,7 @@ import logging
 import socket
 import sys
 import time
+import datetime
 
 #from utils import *
 import utils
@@ -82,8 +83,8 @@ while True:
         print(e)
         break
 
-    elapsed_time = time.time() - the_time
-    print('elapsed', elapsed_time, 'the_time', the_time)
+    the_time = time.time()
+    print('the_time', the_time)
 
     for notified_socket in read_sockets:
         if notified_socket == server_socket:
@@ -110,6 +111,7 @@ while True:
                     'rightAnswers': 0,
                     'roundNumberClient': 0,
                     'timeRound': [],
+                    'startTime': the_time,
                     'clientName': utils.encode_decode(user['data'], 2)
                 }
 
@@ -163,7 +165,7 @@ while True:
                         client_response.get(notified_socket)['result_operation'].append(currentResult)
                         client_response.get(notified_socket)['operations'].append(
                             f"{currentOperation}: {currentResult}")
-                        client_response.get(notified_socket)['timeRound'].append(elapsed_time)
+                        client_response.get(notified_socket)['timeRound'].append(the_time)
                         client_response.get(notified_socket)['roundNumberClient'] += 1
                     else:
 
@@ -231,9 +233,7 @@ while True:
 
                                 '''.format(ranking_list[0][0],
                                            "\n\t\t\t\t\t\t\t".join(
-                                               [str(elem[0] + ': ' + f"{elem[1]}" + ', ' +
-                                                    f"{time.ctime(elem[2])}".split()[-2].split()[-1]) for elem in
-                                                ranking_list]))
+                                               [f"{elem[0]}: {elem[1]}, {datetime.timedelta(seconds=elem[2])}" for elem in ranking_list]))
 
             client_socket.send(
                 user['header'] + user['data'] + message['header'] + bytes("PARTIDA FINALIZADA \n" + scoreboard,
